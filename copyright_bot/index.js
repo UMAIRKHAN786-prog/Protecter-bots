@@ -9,7 +9,7 @@ db.data ||= { logs: [] };
 await db.write();
 
 // === Bot Token ===
-const BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+const BOT_TOKEN = '8338995147:AAE1TolcOA-3cDzrCFg3yPIUzpm5rLVrzRY';
 const bot = new Telegraf(BOT_TOKEN);
 
 // === Commands ===
