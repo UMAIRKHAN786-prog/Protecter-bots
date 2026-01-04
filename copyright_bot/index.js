@@ -1,15 +1,18 @@
-const { Telegraf } = require('telegraf');
-const { Low, JSONFile } = require('lowdb');
+import { Telegraf } from 'telegraf';
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
 
-// === Setup Database ===
+// === Database setup ===
 const adapter = new JSONFile('db.json');
 const db = new Low(adapter);
 await db.read();
 db.data ||= { logs: [] };
 await db.write();
 
-// === Bot Token ===
-const BOT_TOKEN = '8338995147:AAE1TolcOA-3cDzrCFg3yPIUzpm5rLVrzRY';
+// === Bot token from environment variable ===
+const BOT_TOKEN = process.env.BOT_TOKEN;
+if (!BOT_TOKEN) throw new Error("BOT_TOKEN is not defined in environment variables!");
+
 const bot = new Telegraf(BOT_TOKEN);
 
 // === Commands ===
@@ -22,12 +25,11 @@ const keywords = ['copyright', 'infringement', 'steal', 'unauthorized'];
 bot.on('text', async (ctx) => {
   const text = ctx.message.text.toLowerCase();
   if (keywords.some(k => text.includes(k))) {
-    // Log report
     db.data.logs.push({ user: ctx.from.username || ctx.from.first_name, message: ctx.message.text, date: new Date().toISOString() });
     await db.write();
 
     ctx.reply(`⚠️ ${ctx.from.first_name}, your message might violate copyright!`);
-    // Optional: Delete message in group (if bot is admin)
+    // Optional: delete message if bot is admin
     // await ctx.deleteMessage();
   }
 });
